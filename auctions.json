@@ -1,0 +1,32 @@
+{
+  "accounts": [
+    {
+      "email": "test1@qd.pl",
+      "name": "Imie Nazwisko",
+      "password": "haslo123",
+      "role": "general",
+      "avatar": "zdjecia/zaloguj.png"
+    },
+    {
+      "email": "test2@qd.pl",
+      "name": "Imie2 Nazwisko2",
+      "password": "haslo123",
+      "role": "dowodca",
+      "avatar": "zdjecia/user2.png"
+    },
+    {
+      "email": "test3@qd.pl",
+      "name": "Imie3 Nazwisko3",
+      "password": "haslo123",
+      "role": "uzytkownik",
+      "avatar": ""
+    },
+    {
+      "email": "test4@qd.pl",
+      "name": "Imie4 Nazwisko4",
+      "password": "haslo123",
+      "role": "general",
+      "avatar": ""
+    }
+  ]
+}

@@ -1,0 +1,374 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+<meta charset="UTF-8">
+<title>QD – Ogłoszenia</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;600&display=swap" rel="stylesheet">
+
+<style>
+*{margin:0;padding:0;box-sizing:border-box;font-family:Orbitron,sans-serif}
+body{
+    min-height:100vh;
+    background:
+      linear-gradient(135deg, rgba(0,60,150,0.9), rgba(140,220,255,0.9)),
+      url("zdjecia/qd-logo.png") center/contain no-repeat fixed;
+    color:white;
+    overflow-x:hidden;
+}
+
+/* ===== NAVBAR ===== */
+header{
+    position:fixed;
+    top:0;
+    width:100%;
+    height:80px;
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    padding:0 40px;
+    backdrop-filter:blur(14px);
+    background:rgba(0,0,0,0.4);
+    z-index:1000;
+}
+.logo{cursor:pointer}
+.logo img{height:55px;transition:0.4s;}
+.logo:hover img{transform:scale(1.15) rotate(10deg);}
+.nav-center{display:flex;gap:35px;}
+.nav-center a{
+    color:white;
+    text-decoration:none;
+    position:relative;
+    opacity:.8
+}
+.nav-center a.active,
+.nav-center a:hover{
+    opacity:1
+}
+.nav-center a::after{
+    content:"";
+    position:absolute;
+    bottom:-8px;
+    left:0;
+    width:0;
+    height:3px;
+    background:linear-gradient(90deg,#00c6ff,#9adfff);
+    transition:.3s
+}
+.nav-center a:hover::after,
+.nav-center a.active::after{
+    width:100%
+}
+.nav-icons{display:flex;gap:20px;}
+#loginStatus{
+    padding:6px;
+    border-radius:50%;
+    transition:.4s;
+    display:flex;
+    align-items:center;
+    justify-content:center
+}
+#loginStatus.logged-out{
+    background:rgba(255,0,0,.2);
+    box-shadow:0 0 30px rgba(255,0,0,1)
+}
+#loginStatus.logged-in{
+    background:rgba(0,255,120,.2);
+    box-shadow:0 0 35px rgba(0,255,120,1)
+}
+.nav-icons img{
+    height:42px;
+    cursor:pointer;
+    transition:.3s
+}
+.nav-icons img:hover{transform:scale(1.2)}
+#komunikator{opacity:.5}
+#komunikator.active{opacity:1}
+
+/* ===== CONTENT ===== */
+main{
+    padding-top:140px;
+    padding-bottom:160px
+}
+.section{
+    display:flex;
+    justify-content:center;
+    margin-bottom:60px
+}
+.card{
+    width:720px;
+    background:rgba(0,0,0,.45);
+    backdrop-filter:blur(10px);
+    padding:30px;
+    border-radius:18px;
+    animation:fadeUp .6s ease
+}
+@keyframes fadeUp{
+    from{opacity:0;transform:translateY(20px)}
+    to{opacity:1;transform:none}
+}
+
+.post{
+    border-bottom:1px solid rgba(255,255,255,.2);
+    padding:20px 0
+}
+.post:last-child{border:none}
+.post h3{color:#00c6ff;margin-bottom:6px}
+.post .meta{
+    font-size:12px;
+    opacity:.7;
+    margin-bottom:10px
+}
+.poll label{
+    display:block;
+    margin:6px 0;
+    cursor:pointer
+}
+
+/* ===== BUTTON ===== */
+.btn{
+    padding:10px 18px;
+    border:none;
+    border-radius:12px;
+    background:linear-gradient(90deg,#00c6ff,#9adfff);
+    cursor:pointer;
+    font-weight:600;
+    color:#000
+}
+.btn.red{background:linear-gradient(90deg,#ff4d4d,#ff9999)}
+.btn:hover{transform:scale(1.05)}
+
+/* ===== MODAL ===== */
+.modal-bg{
+    position:fixed;
+    inset:0;
+    background:rgba(0,0,0,.8);
+    display:none;
+    align-items:center;
+    justify-content:center;
+    z-index:2000
+}
+.modal{
+    width:420px;
+    padding:30px;
+    background:rgba(0,0,0,.95);
+    border-radius:20px;
+    display:flex;
+    flex-direction:column;
+    gap:12px
+}
+.modal input,
+.modal textarea{
+    padding:10px;
+    border-radius:10px;
+    border:none;
+    background:rgba(255,255,255,.1);
+    color:white
+}
+textarea{resize:none;height:80px}
+</style>
+</head>
+<body>
+
+<header>
+    <div class="logo" onclick="location.href='index.html'">
+        <img src="zdjecia/qd-logo.png">
+    </div>
+
+    <div class="nav-center">
+        <a href="index.html">Strona Główna</a>
+        <a href="ogloszenia.html" class="active">Ogłoszenia</a>
+        <a href="#">Konstytucja QD</a>
+    </div>
+
+    <div class="nav-icons">
+        <img src="zdjecia/komunikator.png" id="komunikator" onclick="location.href='komunikator.html'">
+        <div id="loginStatus" class="logged-out">
+            <img src="zdjecia/zaloguj.png">
+        </div>
+    </div>
+</header>
+
+<main>
+    <div class="section">
+        <div class="card">
+            <h2>Ogłoszenia</h2>
+
+            <div id="posts"></div>
+
+            <br>
+            <button class="btn" onclick="openModal()">Dodaj ogłoszenie</button>
+        </div>
+    </div>
+</main>
+
+<div class="modal-bg" id="modalBg">
+    <div class="modal">
+        <input id="title" placeholder="Tytuł ogłoszenia">
+
+        <textarea id="message" placeholder="Treść ogłoszenia"></textarea>
+
+        <label>
+            <input type="checkbox" id="isPoll">
+            Ankieta
+        </label>
+
+        <div id="pollBox"></div>
+
+        <button class="btn" onclick="addPost()">Dodaj</button>
+        <button class="btn red" onclick="closeModal()">Anuluj</button>
+    </div>
+</div>
+<script>
+let user = JSON.parse(localStorage.getItem("loggedUser") || sessionStorage.getItem("loggedUser"));
+
+if(!user){
+    location.href="index.html";
+}
+
+const postsEl = document.getElementById("posts");
+const modalBg = document.getElementById("modalBg");
+const pollBox = document.getElementById("pollBox");
+const isPoll = document.getElementById("isPoll");
+
+let posts = JSON.parse(localStorage.getItem("qd_posts")) || [];
+
+function savePosts(){
+    localStorage.setItem("qd_posts", JSON.stringify(posts));
+}
+
+function openModal(){
+    modalBg.style.display = "flex";
+}
+
+function closeModal(){
+    modalBg.style.display = "none";
+    title.value = "";
+    message.value = "";
+    pollBox.innerHTML = "";
+    isPoll.checked = false;
+}
+
+isPoll.addEventListener("change",()=>{
+    pollBox.innerHTML = "";
+    if(isPoll.checked){
+        pollBox.innerHTML = `
+            <input id="pollTitle" placeholder="Tytuł ankiety">
+            <input id="opt1" placeholder="Opcja 1">
+            <input id="opt2" placeholder="Opcja 2">
+        `;
+        title.value = "";
+        message.value = "";
+    }
+});
+
+function addPost(){
+    if(isPoll.checked){
+        if(!pollTitle.value.trim()) return;
+        let post = {
+            type:"poll",
+            title: pollTitle.value,
+            options:[
+                {text: opt1.value, votes: []},
+                {text: opt2.value, votes: []}
+            ],
+            author:user.name,
+            date:new Date().toLocaleString()
+        };
+        posts.unshift(post);
+    }else{
+        if(!title.value.trim()) return;
+        let post = {
+            type:"post",
+            title:title.value,
+            message:message.value,
+            author:user.name,
+            date:new Date().toLocaleString()
+        };
+        posts.unshift(post);
+    }
+
+    savePosts();
+    renderPosts();
+    closeModal();
+}
+
+function vote(postIndex, optionIndex){
+    if(!user) return;
+
+    let poll = posts[postIndex];
+    poll.options.forEach(o=>{
+        o.votes = o.votes.filter(v=>v!==user.email);
+    });
+    poll.options[optionIndex].votes.push(user.email);
+    savePosts();
+    renderPosts();
+}
+
+function deletePost(index){
+    if(user.role !== "general") return;
+    posts.splice(index,1);
+    savePosts();
+    renderPosts();
+}
+
+function renderPosts(){
+    postsEl.innerHTML = "";
+
+    if(posts.length === 0){
+        postsEl.innerHTML = "<p>Brak ogłoszeń.</p>";
+        return;
+    }
+
+    posts.forEach((p,i)=>{
+        let div = document.createElement("div");
+        div.className = "post";
+
+        if(p.type === "post"){
+            div.innerHTML = `
+                <h3>${p.title}</h3>
+                <div class="meta">${p.author} • ${p.date}</div>
+                <p>${p.message}</p>
+            `;
+        }
+
+        if(p.type === "poll"){
+            let pollHtml = `
+                <h3>${p.title}</h3>
+                <div class="meta">${p.author} • ${p.date}</div>
+            `;
+            p.options.forEach((o,idx)=>{
+                let checked = o.votes.includes(user.email) ? "checked" : "";
+                pollHtml += `
+                    <label>
+                        <input type="radio" name="poll${i}" ${checked}
+                        onclick="vote(${i},${idx})">
+                        ${o.text} (${o.votes.length})
+                    </label>
+                `;
+            });
+            div.innerHTML = pollHtml;
+        }
+
+        if(user.role === "general"){
+            let del = document.createElement("button");
+            del.className = "btn red";
+            del.innerText = "Usuń";
+            del.onclick = ()=>deletePost(i);
+            div.appendChild(del);
+        }
+
+        postsEl.appendChild(div);
+    });
+}
+
+renderPosts();
+
+if(user){
+    document.getElementById("loginStatus").className = "logged-in";
+    document.getElementById("komunikator").classList.add("active");
+}
+</script>
+
+</body>
+</html>

@@ -1,0 +1,1101 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+<meta charset="UTF-8">
+<title>QD – Komunikator</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;600&display=swap" rel="stylesheet">
+
+<style>
+*{
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+    font-family:Orbitron,sans-serif;
+}
+
+body{
+    height:100vh;
+    display:flex;
+    background:
+        linear-gradient(135deg, rgba(0,60,150,.92), rgba(140,220,255,.92)),
+        url("zdjecia/qd-logo.png") center/contain no-repeat fixed;
+    color:white;
+    overflow:hidden;
+}
+
+/* =====================
+   SIDEBAR
+===================== */
+.sidebar{
+    width:270px;
+    background:rgba(0,0,0,.65);
+    backdrop-filter:blur(14px);
+    display:flex;
+    flex-direction:column;
+    padding-bottom:10px;
+}
+
+.sidebar-header{
+    display:flex;
+    align-items:center;
+    gap:10px;
+    padding:16px;
+    cursor:pointer;
+    border-bottom:1px solid rgba(255,255,255,.15);
+}
+
+.sidebar-header img{
+    width:38px;
+}
+
+.sidebar-header span{
+    font-size:18px;
+    letter-spacing:1px;
+}
+
+/* =====================
+   CHANNEL LIST
+===================== */
+.channels{
+    padding:10px;
+    display:flex;
+    flex-direction:column;
+    gap:6px;
+}
+
+.channel-section{
+    margin-top:10px;
+}
+
+.channel-section h4{
+    font-size:12px;
+    opacity:.6;
+    margin-bottom:6px;
+    padding-left:6px;
+}
+
+.channel{
+    padding:10px 12px;
+    border-radius:8px;
+    cursor:pointer;
+    display:flex;
+    align-items:center;
+    gap:10px;
+    transition:.15s;
+}
+
+.channel:hover{
+    background:rgba(255,255,255,.08);
+}
+
+.channel.active{
+    background:rgba(58,160,255,.25);
+    box-shadow:inset 3px 0 0 #3aa0ff;
+}
+
+.channel img{
+    width:20px;
+    opacity:.85;
+}
+
+/* =====================
+   MAIN CHAT AREA
+===================== */
+.main{
+    flex:1;
+    display:flex;
+    flex-direction:column;
+    background:rgba(0,0,0,.25);
+}
+
+/* =====================
+   TOP BAR
+===================== */
+.topbar{
+    height:60px;
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    padding:0 20px;
+    border-bottom:1px solid rgba(255,255,255,.15);
+}
+
+.topbar-left{
+    display:flex;
+    align-items:center;
+    gap:10px;
+}
+
+.topbar-left h2{
+    font-size:18px;
+    font-weight:600;
+}
+
+.topbar-users{
+    display:flex;
+    gap:8px;
+}
+
+.topbar-user{
+    display:flex;
+    align-items:center;
+    gap:6px;
+    padding:4px 8px;
+    border-radius:8px;
+    background:rgba(255,255,255,.08);
+    font-size:12px;
+}
+
+.topbar-user img{
+    width:22px;
+    height:22px;
+    border-radius:50%;
+}
+
+/* =====================
+   MESSAGES
+===================== */
+.messages{
+    flex:1;
+    padding:20px;
+    overflow-y:auto;
+    display:flex;
+    flex-direction:column;
+    gap:14px;
+}
+
+.message{
+    display:flex;
+    gap:12px;
+}
+
+.message img{
+    width:40px;
+    height:40px;
+    border-radius:50%;
+}
+
+.message-content{
+    display:flex;
+    flex-direction:column;
+    gap:4px;
+}
+
+.message-header{
+    display:flex;
+    align-items:center;
+    gap:10px;
+}
+
+.message-header strong{
+    font-size:14px;
+}
+
+.message-header span{
+    font-size:11px;
+    color:rgba(255,255,255,.6);
+}
+
+.message-bubble{
+    background:rgba(0,0,0,.45);
+    padding:10px 14px;
+    border-radius:12px;
+    max-width:600px;
+    line-height:1.4;
+}
+
+/* =====================
+   INPUT
+===================== */
+.input{
+    padding:14px;
+    display:flex;
+    gap:10px;
+    border-top:1px solid rgba(255,255,255,.15);
+    background:rgba(0,0,0,.4);
+}
+
+.input input{
+    flex:1;
+    padding:12px;
+    border-radius:10px;
+    border:none;
+    background:rgba(255,255,255,.1);
+    color:white;
+}
+
+.input input:focus{
+    outline:none;
+    box-shadow:0 0 0 2px rgba(58,160,255,.5);
+}
+
+.send-btn{
+    width:42px;
+    height:42px;
+    border-radius:50%;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    cursor:pointer;
+    background:linear-gradient(135deg,#3aa0ff,#7ecbff);
+    color:#000;
+    font-size:20px;
+    transition:.15s;
+}
+
+.send-btn:hover{
+    transform:scale(1.08);
+}
+</style>
+</head>
+
+<body>
+
+<div class="sidebar">
+    <div class="sidebar-header" onclick="location.href='index.html'">
+        <img src="zdjecia/qd-logo.png">
+        <span>QD</span>
+    </div>
+
+    <div class="channels">
+        <div class="channel-section">
+            <h4>TEKSTOWE</h4>
+
+            <div class="channel active" data-id="chat-1" data-type="text">
+                <img src="zdjecia/ogolny.png">
+                <span>chat-ogólny</span>
+            </div>
+
+            <div class="channel" data-id="chat-2" data-type="text">
+                <img src="zdjecia/ogolny.png">
+                <span>chat-ogólny-2</span>
+            </div>
+        </div>
+
+        <div class="channel-section">
+            <h4>GŁOSOWE</h4>
+
+            <div class="channel" data-id="voice-1" data-type="voice">
+                <img src="zdjecia/mic.png">
+                <span>głosowe-test</span>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="main">
+    <div class="topbar">
+        <div class="topbar-left">
+            <h2 id="channelTitle">chat-ogólny</h2>
+        </div>
+        <div class="topbar-users" id="topbarUsers"></div>
+    </div>
+
+    <div class="messages" id="messages"></div>
+
+    <div class="input" id="inputWrap">
+        <input id="msgInput" placeholder="Napisz wiadomość...">
+        <div class="send-btn" id="sendBtn">&raquo;</div>
+    </div>
+</div>
+
+<script>
+/* =====================
+   APP STATE
+===================== */
+const currentUser = JSON.parse(
+    localStorage.getItem("loggedUser") ||
+    sessionStorage.getItem("loggedUser") ||
+    '{}'
+);
+
+if(!currentUser.name){
+    location.href="index.html";
+}
+
+let appState = {
+    channel:{
+        id:"chat-1",
+        type:"text",
+        name:"chat-ogólny"
+    }
+};
+
+/* =====================
+   STORAGE
+===================== */
+const STORAGE_KEY="qd_chat_data";
+
+function initStore(){
+    if(!localStorage.getItem(STORAGE_KEY)){
+        localStorage.setItem(STORAGE_KEY, JSON.stringify({
+            messages:{}
+        }));
+    }
+}
+initStore();
+
+function getStore(){
+    return JSON.parse(localStorage.getItem(STORAGE_KEY));
+}
+
+function saveStore(data){
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+}
+
+/* =====================
+   MESSAGES
+===================== */
+const messagesBox=document.getElementById("messages");
+
+function addMessage(msg){
+    const el=document.createElement("div");
+    el.className="message";
+
+    el.innerHTML=`
+        <img src="${msg.avatar || 'zdjecia/zaloguj.png'}">
+        <div class="message-content">
+            <div class="message-header">
+                <strong>${msg.user}</strong>
+                <span>${msg.time}</span>
+            </div>
+            <div class="message-bubble">${msg.text}</div>
+        </div>
+    `;
+
+    messagesBox.appendChild(el);
+    messagesBox.scrollTop=messagesBox.scrollHeight;
+}
+
+function renderMessages(){
+    messagesBox.innerHTML="";
+    const store=getStore();
+    const msgs=store.messages[appState.channel.id]||[];
+    msgs.forEach(addMessage);
+}
+
+function sendMessage(){
+    if(appState.channel.type!=="text") return;
+
+    const input=document.getElementById("msgInput");
+    if(!input.value.trim()) return;
+
+    const now=new Date();
+    const time=
+        now.getHours().toString().padStart(2,"0")+":"+
+        now.getMinutes().toString().padStart(2,"0");
+
+    const msg={
+        user:currentUser.name,
+        avatar:currentUser.avatar,
+        text:input.value,
+        time
+    };
+
+    const store=getStore();
+    if(!store.messages[appState.channel.id]){
+        store.messages[appState.channel.id]=[];
+    }
+
+    store.messages[appState.channel.id].push(msg);
+    saveStore(store);
+
+    addMessage(msg);
+    input.value="";
+}
+
+/* =====================
+   EVENTS
+===================== */
+document.getElementById("sendBtn").onclick=sendMessage;
+document.getElementById("msgInput").addEventListener("keydown",e=>{
+    if(e.key==="Enter") sendMessage();
+});
+
+document.querySelectorAll(".channel").forEach(ch=>{
+    ch.onclick=()=>{
+        document.querySelectorAll(".channel").forEach(c=>c.classList.remove("active"));
+        ch.classList.add("active");
+
+        appState.channel={
+            id:ch.dataset.id,
+            type:ch.dataset.type,
+            name:ch.innerText.trim()
+        };
+
+        document.getElementById("channelTitle").innerText=appState.channel.name;
+        renderMessages();
+    };
+});
+
+/* =====================
+   INIT
+===================== */
+renderMessages();
+</script>
+
+</body>
+</html>
+<style>
+/* =====================
+   VOICE PANEL
+===================== */
+.voice-panel{
+    position:absolute;
+    bottom:16px;
+    left:50%;
+    transform:translateX(-50%);
+    background:rgba(0,0,0,.7);
+    backdrop-filter:blur(14px);
+    padding:14px 18px;
+    border-radius:14px;
+    display:none;
+    gap:14px;
+    align-items:center;
+    box-shadow:0 10px 30px rgba(0,0,0,.6);
+    animation:slideUp .25s ease;
+}
+
+@keyframes slideUp{
+    from{transform:translate(-50%,20px);opacity:0}
+    to{transform:translate(-50%,0);opacity:1}
+}
+
+.voice-btn{
+    width:44px;
+    height:44px;
+    border-radius:50%;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    cursor:pointer;
+    font-size:18px;
+    transition:.15s;
+}
+
+.voice-btn:hover{transform:scale(1.1)}
+
+.voice-btn.mute{background:#444}
+.voice-btn.mute.active{background:#ff4b4b}
+
+.voice-btn.deafen{background:#444}
+.voice-btn.deafen.active{background:#ffaa00}
+
+.voice-btn.leave{
+    background:#ff4b4b;
+    color:#000;
+}
+
+/* =====================
+   VOICE USERS (LEFT)
+===================== */
+.voice-users{
+    padding-left:10px;
+    display:flex;
+    flex-direction:column;
+    gap:6px;
+}
+
+.voice-user{
+    display:flex;
+    align-items:center;
+    gap:8px;
+    padding:6px 8px;
+    border-radius:8px;
+    background:rgba(255,255,255,.06);
+    font-size:12px;
+}
+
+.voice-user img{
+    width:26px;
+    height:26px;
+    border-radius:50%;
+}
+
+.voice-user.talking{
+    box-shadow:0 0 0 2px #3aff7a;
+}
+</style>
+
+<div class="voice-panel" id="voicePanel">
+    <div class="voice-btn mute" id="muteBtn">🔇</div>
+    <div class="voice-btn deafen" id="deafenBtn">🔈</div>
+    <div class="voice-btn leave" id="leaveVoice">⏏</div>
+</div>
+
+<script>
+/* =====================
+   VOICE STATE
+===================== */
+let voiceState={
+    joined:false,
+    muted:false,
+    deafened:false,
+    channel:null
+};
+
+/* =====================
+   VOICE STORAGE
+===================== */
+const VOICE_KEY="qd_voice_channels";
+
+function initVoice(){
+    if(!localStorage.getItem(VOICE_KEY)){
+        localStorage.setItem(VOICE_KEY, JSON.stringify({}));
+    }
+}
+initVoice();
+
+function getVoice(){
+    return JSON.parse(localStorage.getItem(VOICE_KEY));
+}
+
+function saveVoice(data){
+    localStorage.setItem(VOICE_KEY, JSON.stringify(data));
+}
+
+/* =====================
+   JOIN / LEAVE
+===================== */
+function joinVoice(channelId,channelName){
+    const voice=getVoice();
+
+    if(!voice[channelId]) voice[channelId]=[];
+
+    if(!voice[channelId].find(u=>u.email===currentUser.email)){
+        voice[channelId].push({
+            email:currentUser.email,
+            name:currentUser.name,
+            avatar:currentUser.avatar,
+            talking:false
+        });
+    }
+
+    saveVoice(voice);
+
+    voiceState.joined=true;
+    voiceState.channel=channelId;
+
+    document.getElementById("voicePanel").style.display="flex";
+    document.getElementById("inputWrap").style.display="none";
+
+    renderVoiceUsers();
+}
+
+function leaveVoice(){
+    const voice=getVoice();
+    const ch=voiceState.channel;
+    if(!ch) return;
+
+    voice[ch]=voice[ch].filter(u=>u.email!==currentUser.email);
+    saveVoice(voice);
+
+    voiceState.joined=false;
+    voiceState.channel=null;
+
+    document.getElementById("voicePanel").style.display="none";
+    document.getElementById("inputWrap").style.display="flex";
+
+    document.getElementById("topbarUsers").innerHTML="";
+}
+
+/* =====================
+   RENDER USERS
+===================== */
+function renderVoiceUsers(){
+    const voice=getVoice();
+    const users=voice[voiceState.channel]||[];
+
+    const top=document.getElementById("topbarUsers");
+    top.innerHTML="";
+
+    users.forEach(u=>{
+        const el=document.createElement("div");
+        el.className="topbar-user"+(u.talking?" talking":"");
+        el.innerHTML=`<img src="${u.avatar||'zdjecia/zaloguj.png'}">${u.name}`;
+        top.appendChild(el);
+    });
+}
+
+/* =====================
+   BUTTONS
+===================== */
+document.getElementById("muteBtn").onclick=()=>{
+    voiceState.muted=!voiceState.muted;
+    document.getElementById("muteBtn").classList.toggle("active");
+};
+
+document.getElementById("deafenBtn").onclick=()=>{
+    voiceState.deafened=!voiceState.deafened;
+    document.getElementById("deafenBtn").classList.toggle("active");
+};
+
+document.getElementById("leaveVoice").onclick=leaveVoice;
+
+/* =====================
+   CHANNEL CLICK OVERRIDE
+===================== */
+document.querySelectorAll(".channel").forEach(ch=>{
+    ch.addEventListener("click",()=>{
+        if(ch.dataset.type==="voice"){
+            if(!voiceState.joined){
+                joinVoice(ch.dataset.id,ch.innerText.trim());
+                document.getElementById("channelTitle").innerText=ch.innerText.trim();
+            }
+        }else{
+            if(voiceState.joined) leaveVoice();
+        }
+    });
+});
+</script>
+<script>
+/* =====================
+   AUDIO ENGINE
+===================== */
+let audioStream=null;
+let audioContext=null;
+let analyser=null;
+let micSource=null;
+let selfAudio=null;
+let speakingInterval=null;
+
+/* =====================
+   START VOICE
+===================== */
+async function startVoice(){
+    if(audioStream) return;
+
+    try{
+        audioStream=await navigator.mediaDevices.getUserMedia({
+            audio:{
+                echoCancellation:true,
+                noiseSuppression:true,
+                autoGainControl:true
+            }
+        });
+
+        audioContext=new (window.AudioContext||window.webkitAudioContext)();
+        micSource=audioContext.createMediaStreamSource(audioStream);
+        analyser=audioContext.createAnalyser();
+        analyser.fftSize=512;
+
+        micSource.connect(analyser);
+
+        selfAudio=document.createElement("audio");
+        selfAudio.srcObject=audioStream;
+        selfAudio.autoplay=true;
+        selfAudio.muted=false;
+
+        detectSpeaking();
+
+    }catch(err){
+        alert("Brak dostępu do mikrofonu");
+        leaveVoice();
+    }
+}
+
+/* =====================
+   STOP VOICE
+===================== */
+function stopVoice(){
+    if(speakingInterval){
+        clearInterval(speakingInterval);
+        speakingInterval=null;
+    }
+
+    if(audioStream){
+        audioStream.getTracks().forEach(t=>t.stop());
+        audioStream=null;
+    }
+
+    if(audioContext){
+        audioContext.close();
+        audioContext=null;
+    }
+
+    analyser=null;
+    micSource=null;
+
+    markTalking(false);
+}
+
+/* =====================
+   SPEAK DETECTION
+===================== */
+function detectSpeaking(){
+    const data=new Uint8Array(analyser.frequencyBinCount);
+
+    speakingInterval=setInterval(()=>{
+        analyser.getByteFrequencyData(data);
+
+        let sum=0;
+        for(let i=0;i<data.length;i++) sum+=data[i];
+
+        const avg=sum/data.length;
+        const speaking=avg>25 && !voiceState.muted;
+
+        markTalking(speaking);
+    },120);
+}
+
+/* =====================
+   MARK USER SPEAKING
+===================== */
+function markTalking(state){
+    const voice=getVoice();
+    const ch=voiceState.channel;
+    if(!ch || !voice[ch]) return;
+
+    const user=voice[ch].find(u=>u.email===currentUser.email);
+    if(!user) return;
+
+    user.talking=state;
+    saveVoice(voice);
+    renderVoiceUsers();
+}
+
+/* =====================
+   OVERRIDE JOIN / LEAVE
+===================== */
+const _joinVoice=joinVoice;
+joinVoice=function(id,name){
+    _joinVoice(id,name);
+    startVoice();
+};
+
+const _leaveVoice=leaveVoice;
+leaveVoice=function(){
+    stopVoice();
+    _leaveVoice();
+};
+
+/* =====================
+   MUTE / DEAFEN LOGIC
+===================== */
+document.getElementById("muteBtn").addEventListener("click",()=>{
+    if(!audioStream) return;
+    audioStream.getAudioTracks().forEach(t=>{
+        t.enabled=voiceState.muted===false;
+    });
+});
+
+document.getElementById("deafenBtn").addEventListener("click",()=>{
+    if(selfAudio){
+        selfAudio.muted=!voiceState.deafened;
+    }
+});
+
+/* =====================
+   SAFETY
+===================== */
+window.addEventListener("beforeunload",()=>{
+    stopVoice();
+});
+</script>
+<script>
+/* =====================
+   AUDIO ENGINE
+===================== */
+let audioStream=null;
+let audioContext=null;
+let analyser=null;
+let micSource=null;
+let selfAudio=null;
+let speakingInterval=null;
+
+/* =====================
+   START VOICE
+===================== */
+async function startVoice(){
+    if(audioStream) return;
+
+    try{
+        audioStream=await navigator.mediaDevices.getUserMedia({
+            audio:{
+                echoCancellation:true,
+                noiseSuppression:true,
+                autoGainControl:true
+            }
+        });
+
+        audioContext=new (window.AudioContext||window.webkitAudioContext)();
+        micSource=audioContext.createMediaStreamSource(audioStream);
+        analyser=audioContext.createAnalyser();
+        analyser.fftSize=512;
+
+        micSource.connect(analyser);
+
+        selfAudio=document.createElement("audio");
+        selfAudio.srcObject=audioStream;
+        selfAudio.autoplay=true;
+        selfAudio.muted=false;
+
+        detectSpeaking();
+
+    }catch(err){
+        alert("Brak dostępu do mikrofonu");
+        leaveVoice();
+    }
+}
+
+/* =====================
+   STOP VOICE
+===================== */
+function stopVoice(){
+    if(speakingInterval){
+        clearInterval(speakingInterval);
+        speakingInterval=null;
+    }
+
+    if(audioStream){
+        audioStream.getTracks().forEach(t=>t.stop());
+        audioStream=null;
+    }
+
+    if(audioContext){
+        audioContext.close();
+        audioContext=null;
+    }
+
+    analyser=null;
+    micSource=null;
+
+    markTalking(false);
+}
+
+/* =====================
+   SPEAK DETECTION
+===================== */
+function detectSpeaking(){
+    const data=new Uint8Array(analyser.frequencyBinCount);
+
+    speakingInterval=setInterval(()=>{
+        analyser.getByteFrequencyData(data);
+
+        let sum=0;
+        for(let i=0;i<data.length;i++) sum+=data[i];
+
+        const avg=sum/data.length;
+        const speaking=avg>25 && !voiceState.muted;
+
+        markTalking(speaking);
+    },120);
+}
+
+/* =====================
+   MARK USER SPEAKING
+===================== */
+function markTalking(state){
+    const voice=getVoice();
+    const ch=voiceState.channel;
+    if(!ch || !voice[ch]) return;
+
+    const user=voice[ch].find(u=>u.email===currentUser.email);
+    if(!user) return;
+
+    user.talking=state;
+    saveVoice(voice);
+    renderVoiceUsers();
+}
+
+/* =====================
+   OVERRIDE JOIN / LEAVE
+===================== */
+const _joinVoice=joinVoice;
+joinVoice=function(id,name){
+    _joinVoice(id,name);
+    startVoice();
+};
+
+const _leaveVoice=leaveVoice;
+leaveVoice=function(){
+    stopVoice();
+    _leaveVoice();
+};
+
+/* =====================
+   MUTE / DEAFEN LOGIC
+===================== */
+document.getElementById("muteBtn").addEventListener("click",()=>{
+    if(!audioStream) return;
+    audioStream.getAudioTracks().forEach(t=>{
+        t.enabled=voiceState.muted===false;
+    });
+});
+
+document.getElementById("deafenBtn").addEventListener("click",()=>{
+    if(selfAudio){
+        selfAudio.muted=!voiceState.deafened;
+    }
+});
+
+/* =====================
+   SAFETY
+===================== */
+window.addEventListener("beforeunload",()=>{
+    stopVoice();
+});
+</script>
+<style>
+/* =====================
+   QD BRANDING
+===================== */
+body{
+    background:
+        radial-gradient(circle at 20% 20%, rgba(70,80,255,.25), transparent 40%),
+        radial-gradient(circle at 80% 80%, rgba(120,50,255,.25), transparent 45%),
+        linear-gradient(160deg, #0b0f2a, #0a0d1e);
+}
+
+.logo{
+    display:flex;
+    align-items:center;
+    gap:10px;
+    cursor:pointer;
+}
+
+.logo img{
+    width:34px;
+    height:34px;
+    border-radius:8px;
+}
+
+.logo span{
+    font-weight:700;
+    letter-spacing:.5px;
+    font-size:18px;
+    background:linear-gradient(90deg,#6b7cff,#a68bff);
+    -webkit-background-clip:text;
+    -webkit-text-fill-color:transparent;
+}
+
+/* =====================
+   CHANNEL HOVER FIX
+===================== */
+.channel{
+    transition:.15s;
+}
+
+.channel:hover{
+    background:rgba(120,140,255,.15);
+}
+
+.channel.active{
+    background:rgba(120,140,255,.25);
+    box-shadow:inset 3px 0 0 #6b7cff;
+}
+
+/* =====================
+   INPUT FIX
+===================== */
+#messageInput{
+    transition:.15s;
+}
+
+#messageInput:disabled{
+    opacity:.5;
+    cursor:not-allowed;
+}
+
+/* =====================
+   VOICE PANEL POLISH
+===================== */
+.voice-panel{
+    border:1px solid rgba(255,255,255,.12);
+}
+
+.voice-btn{
+    box-shadow:0 6px 14px rgba(0,0,0,.4);
+}
+</style>
+
+<script>
+/* =====================
+   LOGO REDIRECT
+===================== */
+document.querySelector(".logo")?.addEventListener("click",()=>{
+    window.location.href="index.html";
+});
+
+/* =====================
+   INPUT STATE FIX
+===================== */
+function updateInputState(){
+    const input=document.getElementById("messageInput");
+    const wrap=document.getElementById("inputWrap");
+
+    if(voiceState.joined){
+        wrap.style.display="none";
+        input.disabled=true;
+    }else{
+        wrap.style.display="flex";
+        input.disabled=false;
+    }
+}
+
+/* =====================
+   OVERRIDE JOIN / LEAVE FOR INPUT
+===================== */
+const ___join=joinVoice;
+joinVoice=function(id,name){
+    ___join(id,name);
+    updateInputState();
+};
+
+const ___leave=leaveVoice;
+leaveVoice=function(){
+    ___leave();
+    updateInputState();
+};
+
+/* =====================
+   SAFE MESSAGE SEND
+===================== */
+function sendMessage(){
+    if(voiceState.joined) return;
+
+    const input=document.getElementById("messageInput");
+    const text=input.value.trim();
+    if(!text) return;
+
+    channels[currentChannel].push({
+        author:currentUser.name,
+        avatar:currentUser.avatar,
+        text:text,
+        time:new Date().toLocaleTimeString().slice(0,5)
+    });
+
+    input.value="";
+    renderMessages();
+}
+
+/* ENTER + » */
+document.getElementById("messageInput").addEventListener("keydown",e=>{
+    if(e.key==="Enter"){
+        e.preventDefault();
+        sendMessage();
+    }
+});
+
+/* =====================
+   CLEAN GHOST USERS
+===================== */
+function cleanGhosts(){
+    const voice=getVoice();
+    Object.keys(voice).forEach(ch=>{
+        voice[ch]=voice[ch].filter(u=>u.email);
+    });
+    saveVoice(voice);
+}
+cleanGhosts();
+
+/* =====================
+   FINAL SAFETY
+===================== */
+window.addEventListener("focus",()=>{
+    renderVoiceUsers();
+    renderMessages();
+});
+</script>
