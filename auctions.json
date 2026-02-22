@@ -5,10 +5,10 @@
       "name": "Mateusz Myjak",
       "password": "haslo123",
       "role": "general",
-      "avatar": "zdjecia/zaloguj.png"
+      "avatar": "MateuszProf.png"
     },
     {
-      "email": "dabrowskik667@gmail.com",
+      "email": "KamilProf.png",
       "name": "Kamil Dabrowski",
       "password": "azovsea399",
       "role": "general",
@@ -16,5 +16,6 @@
     }
   ]
 }
+
 
 
